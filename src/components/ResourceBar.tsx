@@ -1,6 +1,7 @@
 
 import { Progress } from "@/components/ui/progress";
 import { Resource } from "@/types/zone";
+import { cn } from "@/lib/utils";
 
 interface ResourceBarProps {
   resource: Resource;
@@ -22,11 +23,12 @@ export const ResourceBar = ({ resource }: ResourceBarProps) => {
       <Progress
         value={percentage}
         className="h-2"
-        indicatorClassName={cn({
+        // Fix: Change indicatorClassName to className for the indicator
+        indicator={{ className: cn({
           "bg-alert-high": percentage < 25,
           "bg-alert-medium": percentage >= 25 && percentage < 50,
           "bg-alert-low": percentage >= 50,
-        })}
+        })}}
       />
     </div>
   );

@@ -17,6 +17,7 @@ import { ResourceBar } from "@/components/ResourceBar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useToast } from "@/hooks/use-toast";
+import { cn } from "@/lib/utils";
 
 const Index = () => {
   const [zones, setZones] = useState<Zone[]>(mockZones);
