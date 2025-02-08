@@ -22,13 +22,11 @@ export const ResourceBar = ({ resource }: ResourceBarProps) => {
       </div>
       <Progress
         value={percentage}
-        className="h-2"
-        // Fix: Change indicatorClassName to className for the indicator
-        indicator={{ className: cn({
+        className={cn("h-2", {
           "bg-alert-high": percentage < 25,
           "bg-alert-medium": percentage >= 25 && percentage < 50,
           "bg-alert-low": percentage >= 50,
-        })}}
+        })}
       />
     </div>
   );
