@@ -9,7 +9,244 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      alerts: {
+        Row: {
+          created_at: string | null
+          id: string
+          message: string
+          priority: Database["public"]["Enums"]["alert_priority"]
+          timestamp: string | null
+          title: string
+          updated_at: string | null
+          zone_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          message: string
+          priority: Database["public"]["Enums"]["alert_priority"]
+          timestamp?: string | null
+          title: string
+          updated_at?: string | null
+          zone_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          message?: string
+          priority?: Database["public"]["Enums"]["alert_priority"]
+          timestamp?: string | null
+          title?: string
+          updated_at?: string | null
+          zone_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "alerts_zone_id_fkey"
+            columns: ["zone_id"]
+            isOneToOne: false
+            referencedRelation: "zones"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      demographics: {
+        Row: {
+          adults_population: number
+          created_at: string | null
+          density: number
+          growth_rate: number
+          id: string
+          seniors_population: number
+          total_population: number
+          under_18_population: number
+          updated_at: string | null
+          zone_id: string | null
+        }
+        Insert: {
+          adults_population?: number
+          created_at?: string | null
+          density?: number
+          growth_rate?: number
+          id?: string
+          seniors_population?: number
+          total_population?: number
+          under_18_population?: number
+          updated_at?: string | null
+          zone_id?: string | null
+        }
+        Update: {
+          adults_population?: number
+          created_at?: string | null
+          density?: number
+          growth_rate?: number
+          id?: string
+          seniors_population?: number
+          total_population?: number
+          under_18_population?: number
+          updated_at?: string | null
+          zone_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "demographics_zone_id_fkey"
+            columns: ["zone_id"]
+            isOneToOne: true
+            referencedRelation: "zones"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      environment: {
+        Row: {
+          air_quality: number
+          created_at: string | null
+          id: string
+          seismic_stability: number
+          temperature_control: number
+          updated_at: string | null
+          water_quality: number
+          zone_id: string | null
+        }
+        Insert: {
+          air_quality?: number
+          created_at?: string | null
+          id?: string
+          seismic_stability?: number
+          temperature_control?: number
+          updated_at?: string | null
+          water_quality?: number
+          zone_id?: string | null
+        }
+        Update: {
+          air_quality?: number
+          created_at?: string | null
+          id?: string
+          seismic_stability?: number
+          temperature_control?: number
+          updated_at?: string | null
+          water_quality?: number
+          zone_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "environment_zone_id_fkey"
+            columns: ["zone_id"]
+            isOneToOne: true
+            referencedRelation: "zones"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      infrastructure: {
+        Row: {
+          created_at: string | null
+          hospitals: number
+          id: string
+          power_plants: number
+          residential_units: number
+          schools: number
+          transportation_hubs: number
+          updated_at: string | null
+          zone_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          hospitals?: number
+          id?: string
+          power_plants?: number
+          residential_units?: number
+          schools?: number
+          transportation_hubs?: number
+          updated_at?: string | null
+          zone_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          hospitals?: number
+          id?: string
+          power_plants?: number
+          residential_units?: number
+          schools?: number
+          transportation_hubs?: number
+          updated_at?: string | null
+          zone_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "infrastructure_zone_id_fkey"
+            columns: ["zone_id"]
+            isOneToOne: true
+            referencedRelation: "zones"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      resources: {
+        Row: {
+          capacity: number
+          created_at: string | null
+          current: number
+          id: string
+          type: Database["public"]["Enums"]["resource_type"]
+          unit: string
+          updated_at: string | null
+          zone_id: string | null
+        }
+        Insert: {
+          capacity: number
+          created_at?: string | null
+          current: number
+          id?: string
+          type: Database["public"]["Enums"]["resource_type"]
+          unit: string
+          updated_at?: string | null
+          zone_id?: string | null
+        }
+        Update: {
+          capacity?: number
+          created_at?: string | null
+          current?: number
+          id?: string
+          type?: Database["public"]["Enums"]["resource_type"]
+          unit?: string
+          updated_at?: string | null
+          zone_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "resources_zone_id_fkey"
+            columns: ["zone_id"]
+            isOneToOne: false
+            referencedRelation: "zones"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      zones: {
+        Row: {
+          created_at: string | null
+          id: string
+          maturity_score: number
+          name: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          maturity_score: number
+          name: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          maturity_score?: number
+          name?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -18,7 +255,8 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      alert_priority: "low" | "medium" | "high"
+      resource_type: "water" | "minerals" | "energy"
     }
     CompositeTypes: {
       [_ in never]: never
