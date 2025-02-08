@@ -182,6 +182,41 @@ export type Database = {
           },
         ]
       }
+      population_history: {
+        Row: {
+          created_at: string | null
+          id: string
+          timestamp: string | null
+          total_population: number
+          updated_at: string | null
+          zone_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          timestamp?: string | null
+          total_population: number
+          updated_at?: string | null
+          zone_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          timestamp?: string | null
+          total_population?: number
+          updated_at?: string | null
+          zone_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "population_history_zone_id_fkey"
+            columns: ["zone_id"]
+            isOneToOne: false
+            referencedRelation: "zones"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       resources: {
         Row: {
           capacity: number

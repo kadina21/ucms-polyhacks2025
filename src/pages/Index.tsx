@@ -69,11 +69,14 @@ const Index = () => {
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="grid gap-4 grid-cols-2">
-                <MetricCard
-                  title="Population"
-                  value={zone.demographics.totalPopulation.toLocaleString()}
-                  icon={Users}
-                />
+                <Link to={`/zone/${zone.id}/population`}>
+                  <MetricCard
+                    title="Population"
+                    value={zone.demographics.totalPopulation.toLocaleString()}
+                    icon={Users}
+                    className="cursor-pointer hover:border-primary transition-colors"
+                  />
+                </Link>
                 <MetricCard
                   title="Maturity Score"
                   value={`${zone.maturityScore}%`}
