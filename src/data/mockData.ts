@@ -1,5 +1,4 @@
-
-import { Zone, Alert } from "@/types/zone";
+import { Zone, Alert, MaintenanceRequest } from "@/types/zone";
 
 export const mockZones: Zone[] = [
   {
@@ -41,6 +40,7 @@ export const mockZones: Zone[] = [
       temperatureControl: 90,
     },
     alerts: [],
+    maintenanceRequests: [],
   },
   {
     id: "beta",
@@ -81,6 +81,7 @@ export const mockZones: Zone[] = [
       temperatureControl: 87,
     },
     alerts: [],
+    maintenanceRequests: [],
   },
   {
     id: "gamma",
@@ -121,6 +122,7 @@ export const mockZones: Zone[] = [
       temperatureControl: 80,
     },
     alerts: [],
+    maintenanceRequests: [],
   },
 ];
 
