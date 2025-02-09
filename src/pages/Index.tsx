@@ -8,53 +8,28 @@ import {
   Users,
   Droplet,
   Gauge,
-  Wrench,
 } from "lucide-react";
-import { Zone } from "@/types/zone";
-import { MaintenanceTask } from "@/types/maintenance";
+import { Alert, Zone } from "@/types/zone";
 import { mockZones, mockAlerts } from "@/data/mockData";
 import { MetricCard } from "@/components/MetricCard";
 import { AlertBadge } from "@/components/AlertBadge";
 import { ResourceBar } from "@/components/ResourceBar";
-import { MaintenanceCard } from "@/components/MaintenanceCard";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
-import { supabase } from "@/integrations/supabase/client";
 
 const Index = () => {
   const [zones, setZones] = useState<Zone[]>(mockZones);
   const [alerts, setAlerts] = useState<Alert[]>(mockAlerts);
-  const [maintenanceTasks, setMaintenanceTasks] = useState<MaintenanceTask[]>([]);
   const { toast } = useToast();
 
   useEffect(() => {
-    loadMaintenanceTasks();
     toast({
       title: "Dashboard Initialized",
       description: "Live monitoring of underground zones activated.",
     });
   }, []);
-
-  const loadMaintenanceTasks = async () => {
-    const { data, error } = await supabase
-      .from('maintenance_tasks')
-      .select('*')
-      .order('scheduled_date', { ascending: true });
-
-    if (error) {
-      console.error('Error loading maintenance tasks:', error);
-      toast({
-        title: "Error",
-        description: "Failed to load maintenance tasks",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    setMaintenanceTasks(data);
-  };
 
   return (
     <div className="container mx-auto p-6 space-y-8 animate-fade-in">
@@ -68,7 +43,6 @@ const Index = () => {
         </div>
       </div>
 
-      {/* Zones Section */}
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {zones.map((zone) => (
           <Card
@@ -142,32 +116,6 @@ const Index = () => {
             </CardContent>
           </Card>
         ))}
-      </div>
-
-      {/* Maintenance Section */}
-      <div className="mt-8">
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-2xl font-bold tracking-tight flex items-center gap-2">
-            <Wrench className="w-6 h-6" />
-            Maintenance Tasks
-          </h2>
-          <Link
-            to="/maintenance/new"
-            className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2"
-          >
-            New Task
-          </Link>
-        </div>
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {maintenanceTasks.map((task) => (
-            <MaintenanceCard key={task.id} task={task} />
-          ))}
-          {maintenanceTasks.length === 0 && (
-            <p className="text-muted-foreground col-span-full text-center py-8">
-              No maintenance tasks scheduled
-            </p>
-          )}
-        </div>
       </div>
     </div>
   );
