@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
-import { ArrowLeft, Activity, Clock, AlertTriangle } from "lucide-react";
+import { ArrowLeft, Activity, Clock, AlertTriangle, Wrench } from "lucide-react";
 import { Zone } from "@/types/zone";
 import { mockZones } from "@/data/mockData";
 import { Button } from "@/components/ui/button";
@@ -24,6 +24,9 @@ const ZoneDetail = () => {
   if (!zone) {
     return <div>Zone not found</div>;
   }
+
+  const pendingRequests = zone.maintenanceRequests?.filter(r => r.status === "pending").length || 0;
+  const highPriorityRequests = zone.maintenanceRequests?.filter(r => r.priority === "high").length || 0;
 
   return (
     <div className="container mx-auto p-6 space-y-8 animate-fade-in">
@@ -71,6 +74,30 @@ const ZoneDetail = () => {
               value={`${Math.round((zone.resources.find(r => r.type === "energy")?.current || 0) / (zone.resources.find(r => r.type === "energy")?.capacity || 1) * 100)}%`}
               description="Of maximum capacity"
             />
+          </div>
+
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            <Card>
+              <CardHeader>
+                <CardTitle>Maintenance Overview</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <MetricCard
+                    title="Pending Requests"
+                    value={pendingRequests}
+                    description="Awaiting action"
+                    icon={Clock}
+                  />
+                  <MetricCard
+                    title="High Priority"
+                    value={highPriorityRequests}
+                    description="Urgent issues"
+                    icon={AlertTriangle}
+                  />
+                </div>
+              </CardContent>
+            </Card>
           </div>
         </TabsContent>
 

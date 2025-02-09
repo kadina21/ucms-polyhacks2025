@@ -8,6 +8,8 @@ import {
   Users,
   Droplet,
   Gauge,
+  Wrench,
+  Clock,
 } from "lucide-react";
 import { Alert, Zone } from "@/types/zone";
 import { mockZones, mockAlerts } from "@/data/mockData";
@@ -81,6 +83,19 @@ const Index = () => {
                   title="Maturity Score"
                   value={`${zone.maturityScore}%`}
                   icon={Gauge}
+                />
+              </div>
+
+              <div className="grid gap-4 grid-cols-2">
+                <MetricCard
+                  title="Pending Maintenance"
+                  value={zone.maintenanceRequests?.filter(r => r.status === "pending").length || 0}
+                  icon={Clock}
+                />
+                <MetricCard
+                  title="High Priority"
+                  value={zone.maintenanceRequests?.filter(r => r.priority === "high").length || 0}
+                  icon={AlertTriangle}
                 />
               </div>
 
