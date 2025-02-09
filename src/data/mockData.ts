@@ -1,5 +1,5 @@
 
-import { Zone } from "@/types/zone";
+import { Zone, Alert } from "@/types/zone";
 
 export const mockZones: Zone[] = [
   {
@@ -33,7 +33,8 @@ export const mockZones: Zone[] = [
       waterQuality: 88,
       seismicStability: 95,
       temperatureControl: 90,
-    }
+    },
+    alerts: [],
   },
   {
     id: "beta",
@@ -66,7 +67,8 @@ export const mockZones: Zone[] = [
       waterQuality: 82,
       seismicStability: 88,
       temperatureControl: 87,
-    }
+    },
+    alerts: [],
   },
   {
     id: "gamma",
@@ -99,6 +101,34 @@ export const mockZones: Zone[] = [
       waterQuality: 75,
       seismicStability: 82,
       temperatureControl: 80,
-    }
+    },
+    alerts: [],
+  },
+];
+
+export const mockAlerts: Alert[] = [
+  {
+    id: "1",
+    title: "Low Water Reserves",
+    message: "Water reserves in Gamma Zone falling below 45% capacity",
+    priority: "high",
+    zoneId: "gamma",
+    timestamp: new Date().toISOString(),
+  },
+  {
+    id: "2",
+    title: "Population Density Warning",
+    message: "Beta Zone approaching maximum recommended population density",
+    priority: "medium",
+    zoneId: "beta",
+    timestamp: new Date().toISOString(),
+  },
+  {
+    id: "3",
+    title: "Maintenance Required",
+    message: "Routine maintenance needed for Alpha Zone transportation systems",
+    priority: "low",
+    zoneId: "alpha",
+    timestamp: new Date().toISOString(),
   },
 ];
