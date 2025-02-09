@@ -1,9 +1,7 @@
-
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { ArrowLeft, Activity } from "lucide-react";
 import { Zone, Alert } from "@/types/zone";
-import { mockZones } from "@/data/mockData";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -18,10 +16,72 @@ const ZoneDetail = () => {
   const [zone, setZone] = useState<Zone | undefined>();
   const [alerts, setAlerts] = useState<Alert[]>([]);
 
-  useEffect(() => {
-    const foundZone = mockZones.find((z) => z.id === id);
-    setZone(foundZone);
-  }, [id]);
+  const fetchZoneDetails = async () => {
+    if (!id) return;
+
+    try {
+      const { data: zoneData, error: zoneError } = await supabase
+        .from('zone_details')
+        .select('*')
+        .eq('id', id)
+        .maybeSingle();
+
+      if (zoneError) {
+        console.error("Error fetching zone details:", zoneError);
+        return;
+      }
+
+      if (!zoneData) {
+        console.error("Zone not found");
+        return;
+      }
+
+      const { data: resourcesData, error: resourcesError } = await supabase
+        .from('zone_resources')
+        .select('resources')
+        .eq('zone_id', id)
+        .maybeSingle();
+
+      if (resourcesError) {
+        console.error("Error fetching resources:", resourcesError);
+        return;
+      }
+
+      const completeZone: Zone = {
+        id: zoneData.id,
+        name: zoneData.name,
+        maturityScore: zoneData.maturity_score,
+        demographics: {
+          totalPopulation: zoneData.total_population,
+          growthRate: zoneData.growth_rate,
+          density: zoneData.density,
+          ageDistribution: {
+            under18: Math.round((zoneData.under_18_population / zoneData.total_population) * 100),
+            adults: Math.round((zoneData.adults_population / zoneData.total_population) * 100),
+            seniors: Math.round((zoneData.seniors_population / zoneData.total_population) * 100),
+          },
+        },
+        environment: {
+          airQuality: zoneData.air_quality,
+          waterQuality: zoneData.water_quality,
+          seismicStability: zoneData.seismic_stability,
+          temperatureControl: zoneData.temperature_control,
+        },
+        infrastructure: {
+          hospitals: zoneData.hospitals,
+          schools: zoneData.schools,
+          residentialUnits: zoneData.residential_units,
+          transportationHubs: zoneData.transportation_hubs,
+          powerPlants: zoneData.power_plants,
+        },
+        resources: resourcesData?.resources || [],
+      };
+
+      setZone(completeZone);
+    } catch (error) {
+      console.error("Error fetching zone data:", error);
+    }
+  };
 
   const fetchAlerts = async () => {
     if (!id) return;
@@ -38,7 +98,6 @@ const ZoneDetail = () => {
         return;
       }
 
-      // Map the Supabase response to match our Alert type
       const formattedAlerts: Alert[] = data.map(alert => ({
         id: alert.id,
         title: alert.title,
@@ -55,11 +114,12 @@ const ZoneDetail = () => {
   };
 
   useEffect(() => {
+    fetchZoneDetails();
     fetchAlerts();
   }, [id]);
 
   if (!zone) {
-    return <div>Zone not found</div>;
+    return <div>Loading zone details...</div>;
   }
 
   return (
