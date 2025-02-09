@@ -210,6 +210,57 @@ export type Database = {
           },
         ]
       }
+      maintenance_requests: {
+        Row: {
+          category: Database["public"]["Enums"]["request_category"]
+          created_at: string | null
+          description: string | null
+          id: string
+          resolved_at: string | null
+          status: Database["public"]["Enums"]["request_status"] | null
+          title: string
+          updated_at: string | null
+          zone_id: string
+        }
+        Insert: {
+          category: Database["public"]["Enums"]["request_category"]
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          resolved_at?: string | null
+          status?: Database["public"]["Enums"]["request_status"] | null
+          title: string
+          updated_at?: string | null
+          zone_id: string
+        }
+        Update: {
+          category?: Database["public"]["Enums"]["request_category"]
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          resolved_at?: string | null
+          status?: Database["public"]["Enums"]["request_status"] | null
+          title?: string
+          updated_at?: string | null
+          zone_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "maintenance_requests_zone_id_fkey"
+            columns: ["zone_id"]
+            isOneToOne: false
+            referencedRelation: "zone_details"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "maintenance_requests_zone_id_fkey"
+            columns: ["zone_id"]
+            isOneToOne: false
+            referencedRelation: "zones"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       maintenance_tasks: {
         Row: {
           actual_duration: unknown | null
@@ -449,6 +500,12 @@ export type Database = {
       maintenance_priority: "low" | "medium" | "high"
       maintenance_status: "pending" | "in_progress" | "completed" | "cancelled"
       maintenance_type: "routine" | "repair" | "upgrade"
+      request_category:
+        | "water"
+        | "electricity"
+        | "temperature"
+        | "communication"
+      request_status: "open" | "in_progress" | "resolved" | "closed"
       resource_type: "water" | "minerals" | "energy"
     }
     CompositeTypes: {
