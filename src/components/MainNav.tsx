@@ -14,10 +14,10 @@ export function MainNav() {
 
   const routes = [
     {
-      href: "/",
+      href: "/dashboard",
       label: "Dashboard",
       icon: LayoutDashboard,
-      active: location.pathname === "/"
+      active: location.pathname === "/dashboard"
     },
     {
       href: "/maintenance",
@@ -44,7 +44,7 @@ export function MainNav() {
   return (
     <div className="flex justify-between items-center w-full px-6 py-4 glass-morphism">
       <div className="flex items-center">
-        <Link to="/" className="flex items-center space-x-2">
+        <Link to="/dashboard" className="flex items-center space-x-2">
           <span className="text-2xl font-bold bg-gradient-to-r from-blue-500 via-primary to-purple-500 bg-clip-text text-transparent">UCMS</span>
         </Link>
       </div>
