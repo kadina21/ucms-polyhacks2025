@@ -1,131 +1,26 @@
-
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
-import { ArrowLeft, Activity, Wrench, Users, Building2, Database, Wind } from "lucide-react";
-import { Zone, MaintenanceRequest } from "@/types/zone";
-import { supabase } from "@/integrations/supabase/client";
+import { ArrowLeft, Activity } from "lucide-react";
+import { Zone } from "@/types/zone";
+import { mockZones } from "@/data/mockData";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { MetricCard } from "@/components/MetricCard";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { useToast } from "@/hooks/use-toast";
-import { Badge } from "@/components/ui/badge";
-import { cn } from "@/lib/utils";
+import { ResourceBar } from "@/components/ResourceBar";
 
 const ZoneDetail = () => {
   const { id } = useParams();
   const [zone, setZone] = useState<Zone | undefined>();
-  const { toast } = useToast();
 
   useEffect(() => {
-    const fetchZoneData = async () => {
-      if (!id) return;
-
-      try {
-        // Fetch zone details
-        const { data: zoneData, error: zoneError } = await supabase
-          .from('zones')
-          .select('*')
-          .eq('id', id)
-          .single();
-
-        if (zoneError) throw zoneError;
-
-        // Fetch maintenance requests
-        const { data: maintenanceData, error: maintenanceError } = await supabase
-          .from('maintenance_requests')
-          .select('*')
-          .eq('zone_id', id);
-
-        if (maintenanceError) throw maintenanceError;
-
-        const maintenanceRequests = maintenanceData.map(req => ({
-          id: req.id,
-          title: req.title,
-          description: req.description,
-          category: req.category,
-          status: req.status,
-          zoneId: req.zone_id,
-          createdAt: req.created_at,
-          updatedAt: req.updated_at,
-          resolvedAt: req.resolved_at,
-        }));
-
-        setZone({
-          id: zoneData.id,
-          name: zoneData.name,
-          maturityScore: zoneData.maturity_score,
-          resources: [],
-          infrastructure: {
-            hospitals: 5,
-            schools: 12,
-            residentialUnits: 5000,
-            transportationHubs: 3,
-            powerPlants: 2,
-            transportation: {
-              uoeCount: 150,
-              multilevelTrains: 10,
-              flyingVehicles: 50,
-              accessibilityRate: 85,
-            }
-          },
-          demographics: {
-            totalPopulation: 250000,
-            growthRate: 2.5,
-            density: 4500,
-            ageDistribution: {
-              under18: 25,
-              adults: 60,
-              seniors: 15,
-            }
-          },
-          environment: {
-            airQuality: 85,
-            waterQuality: 90,
-            seismicStability: 95,
-            temperatureControl: 88,
-          },
-          alerts: [],
-          maintenanceRequests,
-        });
-      } catch (error: any) {
-        toast({
-          title: "Error",
-          description: "Failed to fetch zone data: " + error.message,
-          variant: "destructive",
-        });
-      }
-    };
-
-    fetchZoneData();
+    const foundZone = mockZones.find((z) => z.id === id);
+    setZone(foundZone);
   }, [id]);
 
   if (!zone) {
-    return <div>Loading...</div>;
+    return <div>Zone not found</div>;
   }
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'open':
-        return 'bg-red-100 text-red-800';
-      case 'in_progress':
-        return 'bg-yellow-100 text-yellow-800';
-      case 'resolved':
-        return 'bg-green-100 text-green-800';
-      case 'closed':
-        return 'bg-gray-100 text-gray-800';
-      default:
-        return '';
-    }
-  };
 
   return (
     <div className="container mx-auto p-6 space-y-8 animate-fade-in">
@@ -144,7 +39,10 @@ const ZoneDetail = () => {
       <Tabs defaultValue="overview" className="space-y-6">
         <TabsList>
           <TabsTrigger value="overview">Overview</TabsTrigger>
-          <TabsTrigger value="maintenance">Maintenance</TabsTrigger>
+          <TabsTrigger value="demographics">Demographics</TabsTrigger>
+          <TabsTrigger value="infrastructure">Infrastructure</TabsTrigger>
+          <TabsTrigger value="resources">Resources</TabsTrigger>
+          <TabsTrigger value="environment">Environment</TabsTrigger>
         </TabsList>
 
         <TabsContent value="overview" className="space-y-6">
@@ -153,137 +51,135 @@ const ZoneDetail = () => {
               title="Maturity Score"
               value={`${zone.maturityScore}%`}
               description="Overall zone performance"
-              icon={Activity}
             />
             <MetricCard
               title="Population"
               value={zone.demographics.totalPopulation.toLocaleString()}
               description={`${zone.demographics.growthRate}% annual growth`}
-              icon={Users}
             />
             <MetricCard
-              title="Infrastructure"
-              value={`${zone.infrastructure.residentialUnits.toLocaleString()}`}
-              description={`${zone.infrastructure.hospitals} hospitals, ${zone.infrastructure.schools} schools`}
-              icon={Building2}
+              title="Housing Capacity"
+              value={zone.infrastructure.residentialUnits.toLocaleString()}
+              description="Total residential units"
             />
             <MetricCard
-              title="Environment"
-              value={`${zone.environment.airQuality}%`}
-              description="Air quality index"
-              icon={Wind}
+              title="Energy Efficiency"
+              value={`${Math.round((zone.resources.find(r => r.type === "energy")?.current || 0) / (zone.resources.find(r => r.type === "energy")?.capacity || 1) * 100)}%`}
+              description="Of maximum capacity"
             />
-          </div>
-
-          <div className="grid gap-6 md:grid-cols-2">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Users className="w-5 h-5" />
-                  Demographics
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <p className="text-sm text-muted-foreground">Age Distribution</p>
-                    <p className="text-2xl font-bold">
-                      {zone.demographics.ageDistribution.adults}% Adults
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-muted-foreground">Population Density</p>
-                    <p className="text-2xl font-bold">
-                      {zone.demographics.density}/km²
-                    </p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Database className="w-5 h-5" />
-                  Infrastructure
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <p className="text-sm text-muted-foreground">Transport Hubs</p>
-                    <p className="text-2xl font-bold">
-                      {zone.infrastructure.transportationHubs}
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-muted-foreground">Power Plants</p>
-                    <p className="text-2xl font-bold">
-                      {zone.infrastructure.powerPlants}
-                    </p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
           </div>
         </TabsContent>
 
-        <TabsContent value="maintenance" className="space-y-6">
-          <div className="grid gap-6 md:grid-cols-3">
+        <TabsContent value="demographics" className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Population Distribution</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <div className="grid grid-cols-3 gap-4">
+                  <div className="text-center">
+                    <div className="text-2xl font-bold">{zone.demographics.ageDistribution.under18}%</div>
+                    <div className="text-sm text-muted-foreground">Under 18</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-2xl font-bold">{zone.demographics.ageDistribution.adults}%</div>
+                    <div className="text-sm text-muted-foreground">Adults</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-2xl font-bold">{zone.demographics.ageDistribution.seniors}%</div>
+                    <div className="text-sm text-muted-foreground">Seniors</div>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="infrastructure" className="space-y-6">
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             <MetricCard
-              title="Open Requests"
-              value={zone.maintenanceRequests.filter(r => r.status === 'open').length}
-              icon={Wrench}
+              title="Hospitals"
+              value={zone.infrastructure.hospitals}
+              description="Medical facilities"
             />
             <MetricCard
-              title="In Progress"
-              value={zone.maintenanceRequests.filter(r => r.status === 'in_progress').length}
-              icon={Wrench}
+              title="Schools"
+              value={zone.infrastructure.schools}
+              description="Educational institutions"
             />
             <MetricCard
-              title="Resolved"
-              value={zone.maintenanceRequests.filter(r => r.status === 'resolved').length}
-              icon={Wrench}
+              title="Transportation Hubs"
+              value={zone.infrastructure.transportationHubs}
+              description="Major transit centers"
             />
           </div>
 
           <Card>
             <CardHeader>
-              <CardTitle>Maintenance Requests</CardTitle>
+              <CardTitle>Transportation Systems</CardTitle>
             </CardHeader>
-            <CardContent>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Title</TableHead>
-                    <TableHead>Category</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead>Created</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {zone.maintenanceRequests.map((request) => (
-                    <TableRow key={request.id}>
-                      <TableCell className="font-medium">{request.title}</TableCell>
-                      <TableCell>
-                        <Badge variant="outline" className="capitalize">
-                          {request.category}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>
-                        <Badge className={cn("capitalize", getStatusColor(request.status))}>
-                          {request.status}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>
-                        {new Date(request.createdAt).toLocaleDateString()}
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+            <CardContent className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+              <MetricCard
+                title="UOE"
+                value={zone.infrastructure.transportation.uoeCount}
+                description="Underground Optimal Elevators"
+              />
+              <MetricCard
+                title="Multilevel Trains"
+                value={zone.infrastructure.transportation.multilevelTrains}
+                description="Active train systems"
+              />
+              <MetricCard
+                title="Flying Vehicles"
+                value={zone.infrastructure.transportation.flyingVehicles}
+                description="Two-seater vehicles"
+              />
+              <MetricCard
+                title="Accessibility"
+                value={`${zone.infrastructure.transportation.accessibilityRate}%`}
+                description="Transportation accessibility rate"
+              />
             </CardContent>
           </Card>
+        </TabsContent>
+
+        <TabsContent value="resources" className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Resource Utilization</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              {zone.resources.map((resource) => (
+                <ResourceBar key={resource.type} resource={resource} />
+              ))}
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="environment" className="space-y-6">
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+            <MetricCard
+              title="Air Quality"
+              value={`${zone.environment.airQuality}%`}
+              description="Atmospheric conditions"
+            />
+            <MetricCard
+              title="Water Quality"
+              value={`${zone.environment.waterQuality}%`}
+              description="Water system health"
+            />
+            <MetricCard
+              title="Seismic Stability"
+              value={`${zone.environment.seismicStability}%`}
+              description="Structural integrity"
+            />
+            <MetricCard
+              title="Temperature Control"
+              value={`${zone.environment.temperatureControl}%`}
+              description="Climate management"
+            />
+          </div>
         </TabsContent>
       </Tabs>
     </div>
@@ -291,4 +187,3 @@ const ZoneDetail = () => {
 };
 
 export default ZoneDetail;
-

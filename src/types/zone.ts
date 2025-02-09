@@ -3,21 +3,6 @@ export type ResourceType = "water" | "minerals" | "energy";
 
 export type AlertPriority = "low" | "medium" | "high";
 
-export type RequestCategory = "water" | "electricity" | "temperature" | "communication";
-export type RequestStatus = "open" | "in_progress" | "resolved" | "closed";
-
-export type MaintenanceRequest = {
-  id: string;
-  title: string;
-  description: string | null;
-  category: RequestCategory;
-  status: RequestStatus;
-  zoneId: string;
-  createdAt: string;
-  updatedAt: string | null;
-  resolvedAt: string | null;
-};
-
 export type Alert = {
   id: string;
   title: string;
@@ -77,5 +62,4 @@ export type Zone = {
   demographics: Demographics;
   environment: Environment;
   alerts: Alert[];
-  maintenanceRequests: MaintenanceRequest[];
 };
