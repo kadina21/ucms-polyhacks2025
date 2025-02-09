@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { ArrowLeft, Activity } from "lucide-react";
@@ -115,6 +114,34 @@ const ZoneDetail = () => {
               description="Major transit centers"
             />
           </div>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Transportation Systems</CardTitle>
+            </CardHeader>
+            <CardContent className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+              <MetricCard
+                title="UOE"
+                value={zone.infrastructure.transportation.uoeCount}
+                description="Underground Optimal Elevators"
+              />
+              <MetricCard
+                title="Multilevel Trains"
+                value={zone.infrastructure.transportation.multilevelTrains}
+                description="Active train systems"
+              />
+              <MetricCard
+                title="Flying Vehicles"
+                value={zone.infrastructure.transportation.flyingVehicles}
+                description="Two-seater vehicles"
+              />
+              <MetricCard
+                title="Accessibility"
+                value={`${zone.infrastructure.transportation.accessibilityRate}%`}
+                description="Transportation accessibility rate"
+              />
+            </CardContent>
+          </Card>
         </TabsContent>
 
         <TabsContent value="resources" className="space-y-6">

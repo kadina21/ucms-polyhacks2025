@@ -19,12 +19,20 @@ export type Resource = {
   unit: string;
 };
 
+export type Transportation = {
+  uoeCount: number;
+  multilevelTrains: number;
+  flyingVehicles: number;
+  accessibilityRate: number;
+};
+
 export type Infrastructure = {
   hospitals: number;
   schools: number;
   residentialUnits: number;
   transportationHubs: number;
   powerPlants: number;
+  transportation: Transportation;
 };
 
 export type Demographics = {

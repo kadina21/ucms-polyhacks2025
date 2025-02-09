@@ -45,6 +45,13 @@ export type Database = {
             foreignKeyName: "alerts_zone_id_fkey"
             columns: ["zone_id"]
             isOneToOne: false
+            referencedRelation: "zone_details"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "alerts_zone_id_fkey"
+            columns: ["zone_id"]
+            isOneToOne: false
             referencedRelation: "zones"
             referencedColumns: ["id"]
           },
@@ -92,6 +99,13 @@ export type Database = {
             foreignKeyName: "demographics_zone_id_fkey"
             columns: ["zone_id"]
             isOneToOne: true
+            referencedRelation: "zone_details"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "demographics_zone_id_fkey"
+            columns: ["zone_id"]
+            isOneToOne: true
             referencedRelation: "zones"
             referencedColumns: ["id"]
           },
@@ -129,6 +143,13 @@ export type Database = {
           zone_id?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "environment_zone_id_fkey"
+            columns: ["zone_id"]
+            isOneToOne: true
+            referencedRelation: "zone_details"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "environment_zone_id_fkey"
             columns: ["zone_id"]
@@ -177,6 +198,13 @@ export type Database = {
             foreignKeyName: "infrastructure_zone_id_fkey"
             columns: ["zone_id"]
             isOneToOne: true
+            referencedRelation: "zone_details"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "infrastructure_zone_id_fkey"
+            columns: ["zone_id"]
+            isOneToOne: true
             referencedRelation: "zones"
             referencedColumns: ["id"]
           },
@@ -208,6 +236,13 @@ export type Database = {
           zone_id?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "population_history_zone_id_fkey"
+            columns: ["zone_id"]
+            isOneToOne: false
+            referencedRelation: "zone_details"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "population_history_zone_id_fkey"
             columns: ["zone_id"]
@@ -253,6 +288,13 @@ export type Database = {
             foreignKeyName: "resources_zone_id_fkey"
             columns: ["zone_id"]
             isOneToOne: false
+            referencedRelation: "zone_details"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "resources_zone_id_fkey"
+            columns: ["zone_id"]
+            isOneToOne: false
             referencedRelation: "zones"
             referencedColumns: ["id"]
           },
@@ -284,7 +326,51 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      zone_details: {
+        Row: {
+          adults_population: number | null
+          air_quality: number | null
+          density: number | null
+          growth_rate: number | null
+          hospitals: number | null
+          id: string | null
+          maturity_score: number | null
+          name: string | null
+          power_plants: number | null
+          residential_units: number | null
+          schools: number | null
+          seismic_stability: number | null
+          seniors_population: number | null
+          temperature_control: number | null
+          total_population: number | null
+          transportation_hubs: number | null
+          under_18_population: number | null
+          water_quality: number | null
+        }
+        Relationships: []
+      }
+      zone_resources: {
+        Row: {
+          resources: Json | null
+          zone_id: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "resources_zone_id_fkey"
+            columns: ["zone_id"]
+            isOneToOne: false
+            referencedRelation: "zone_details"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "resources_zone_id_fkey"
+            columns: ["zone_id"]
+            isOneToOne: false
+            referencedRelation: "zones"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Functions: {
       [_ in never]: never

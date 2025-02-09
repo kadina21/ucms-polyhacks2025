@@ -17,6 +17,12 @@ export const mockZones: Zone[] = [
       residentialUnits: 2500,
       transportationHubs: 5,
       powerPlants: 2,
+      transportation: {
+        uoeCount: 12,
+        multilevelTrains: 8,
+        flyingVehicles: 250,
+        accessibilityRate: 95,
+      },
     },
     demographics: {
       totalPopulation: 25000,
@@ -51,6 +57,12 @@ export const mockZones: Zone[] = [
       residentialUnits: 1800,
       transportationHubs: 3,
       powerPlants: 1,
+      transportation: {
+        uoeCount: 8,
+        multilevelTrains: 5,
+        flyingVehicles: 150,
+        accessibilityRate: 88,
+      },
     },
     demographics: {
       totalPopulation: 18000,
@@ -85,6 +97,12 @@ export const mockZones: Zone[] = [
       residentialUnits: 1200,
       transportationHubs: 2,
       powerPlants: 1,
+      transportation: {
+        uoeCount: 5,
+        multilevelTrains: 3,
+        flyingVehicles: 80,
+        accessibilityRate: 75,
+      },
     },
     demographics: {
       totalPopulation: 12000,
