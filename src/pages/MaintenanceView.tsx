@@ -52,7 +52,7 @@ const MaintenanceView = () => {
                   <TableCell>{request.description}</TableCell>
                   <TableCell>
                     <Badge
-                      variant={request.status === "pending" ? "secondary" : "success"}
+                      variant={request.status === "pending" ? "outline" : "default"}
                     >
                       {request.status}
                     </Badge>
@@ -63,7 +63,7 @@ const MaintenanceView = () => {
                         request.priority === "high"
                           ? "destructive"
                           : request.priority === "medium"
-                          ? "warning"
+                          ? "secondary"
                           : "default"
                       }
                     >

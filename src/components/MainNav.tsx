@@ -1,6 +1,6 @@
 
 import { Link, useLocation } from "react-router-dom";
-import { LayoutDashboard, Tool, PlayCircle } from "lucide-react";
+import { LayoutDashboard, Settings, PlayCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export function MainNav() {
@@ -16,7 +16,7 @@ export function MainNav() {
     {
       href: "/maintenance",
       label: "Maintenance",
-      icon: Tool,
+      icon: Settings,
       active: location.pathname === "/maintenance"
     },
     {
