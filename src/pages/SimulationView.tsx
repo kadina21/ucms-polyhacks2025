@@ -1,11 +1,19 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { PlayCircle } from "lucide-react";
 import { Slider } from "@/components/ui/slider";
 import { Progress } from "@/components/ui/progress";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { mockZones } from "@/data/mockData";
 
 interface SimulationResults {
   oxygen: number;
@@ -17,33 +25,41 @@ interface SimulationResults {
 const SimulationView = () => {
   const { toast } = useToast();
   const [isSimulating, setIsSimulating] = useState(false);
+  const [selectedZone, setSelectedZone] = useState(mockZones[0].id);
   const [oxygen, setOxygen] = useState(50);
   const [water, setWater] = useState(50);
   const [electricity, setElectricity] = useState(50);
   const [results, setResults] = useState<SimulationResults | null>(null);
 
+  const selectedZoneData = mockZones.find((zone) => zone.id === selectedZone);
+
   const runSimulation = () => {
+    if (!selectedZoneData) return;
+
     setIsSimulating(true);
     toast({
       title: "Simulation Started",
       description: "Resource allocation simulation is now running...",
     });
 
-    // Simulate processing with the chosen resource values
+    // Calculate population factor (1 for normal population, less for lower population)
+    const populationFactor = selectedZoneData.demographics.totalPopulation / 25000; // Normalized to largest zone
+    const efficiencyMultiplier = 0.8 + (Math.random() * 0.4); // Base efficiency (80-120%)
+
     setTimeout(() => {
-      // Mock simulation results based on input values
+      // Mock simulation results based on input values and population
       const mockResults: SimulationResults = {
-        oxygen: oxygen * (0.8 + Math.random() * 0.4), // 80-120% efficiency
-        water: water * (0.8 + Math.random() * 0.4),
-        electricity: electricity * (0.8 + Math.random() * 0.4),
-        efficiency: Math.min(100, (oxygen + water + electricity) / 3),
+        oxygen: Math.min(100, (oxygen * efficiencyMultiplier) / populationFactor),
+        water: Math.min(100, (water * efficiencyMultiplier) / populationFactor),
+        electricity: Math.min(100, (electricity * efficiencyMultiplier) / populationFactor),
+        efficiency: Math.min(100, ((oxygen + water + electricity) / 3) / populationFactor),
       };
       
       setResults(mockResults);
       setIsSimulating(false);
       toast({
         title: "Simulation Complete",
-        description: "Resource allocation has been optimized based on the simulation results.",
+        description: `Resource allocation has been optimized for ${selectedZoneData.name} with population of ${selectedZoneData.demographics.totalPopulation}.`,
       });
     }, 3000);
   };
@@ -61,6 +77,28 @@ const SimulationView = () => {
           </CardHeader>
           <CardContent className="space-y-6">
             <div className="space-y-4">
+              <div className="space-y-2">
+                <label className="text-sm font-medium leading-none">
+                  Select Zone
+                </label>
+                <Select
+                  value={selectedZone}
+                  onValueChange={setSelectedZone}
+                  disabled={isSimulating}
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Select a zone" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {mockZones.map((zone) => (
+                      <SelectItem key={zone.id} value={zone.id}>
+                        {zone.name} (Pop: {zone.demographics.totalPopulation})
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
               <div className="space-y-2">
                 <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
                   Oxygen Capacity (m³/hour)
@@ -106,7 +144,7 @@ const SimulationView = () => {
 
             <Button
               onClick={runSimulation}
-              disabled={isSimulating}
+              disabled={isSimulating || !selectedZoneData}
               className="w-full"
             >
               <PlayCircle className="mr-2 h-4 w-4" />
