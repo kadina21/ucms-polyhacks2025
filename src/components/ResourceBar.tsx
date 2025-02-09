@@ -23,9 +23,10 @@ export const ResourceBar = ({ resource }: ResourceBarProps) => {
       <Progress
         value={percentage}
         className={cn("h-2", {
-          "bg-alert-high": percentage >= 75,
-          "bg-alert-medium": percentage >= 50 && percentage < 75,
-          "bg-alert-low": percentage < 50,
+          "bg-primary": percentage >= 75,
+          "bg-alert-low": percentage < 25,
+          "bg-alert-medium": percentage >= 25 && percentage < 50,
+          "bg-alert-high": percentage >= 50 && percentage < 75,
         })}
       />
     </div>

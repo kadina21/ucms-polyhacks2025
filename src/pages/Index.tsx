@@ -131,9 +131,8 @@ const Index = () => {
                       >
                         <AlertTriangle
                           className={cn("w-4 h-4", {
-                            "text-alert-medium": alert.priority === "low",
                             "text-alert-medium": alert.priority === "medium",
-                            "text-alert-high": alert.priority === "high",
+                            "text-alert-high": alert.priority === "high"
                           })}
                         />
                         <span className="text-sm">{alert.title}</span>
