@@ -21,7 +21,7 @@ const Login = () => {
       description: "Welcome to the Underground Cities Management System",
     });
     // Redirect to dashboard
-    navigate("/");
+    navigate("/dashboard");
   };
 
   return (
