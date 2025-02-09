@@ -1,0 +1,49 @@
+
+import { Link, useLocation } from "react-router-dom";
+import { LayoutDashboard, Tool, PlayCircle } from "lucide-react";
+import { cn } from "@/lib/utils";
+
+export function MainNav() {
+  const location = useLocation();
+
+  const routes = [
+    {
+      href: "/",
+      label: "Dashboard",
+      icon: LayoutDashboard,
+      active: location.pathname === "/"
+    },
+    {
+      href: "/maintenance",
+      label: "Maintenance",
+      icon: Tool,
+      active: location.pathname === "/maintenance"
+    },
+    {
+      href: "/simulation",
+      label: "Simulation",
+      icon: PlayCircle,
+      active: location.pathname === "/simulation"
+    }
+  ];
+
+  return (
+    <nav className="flex items-center space-x-4 lg:space-x-6 mx-6">
+      {routes.map((route) => (
+        <Link
+          key={route.href}
+          to={route.href}
+          className={cn(
+            "text-sm font-medium transition-colors hover:text-primary flex items-center space-x-2",
+            route.active 
+              ? "text-primary" 
+              : "text-muted-foreground"
+          )}
+        >
+          <route.icon className="h-4 w-4" />
+          <span>{route.label}</span>
+        </Link>
+      ))}
+    </nav>
+  );
+}
