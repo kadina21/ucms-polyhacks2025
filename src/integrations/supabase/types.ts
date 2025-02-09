@@ -349,6 +349,28 @@ export type Database = {
         }
         Relationships: []
       }
+      zone_resources: {
+        Row: {
+          resources: Json | null
+          zone_id: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "resources_zone_id_fkey"
+            columns: ["zone_id"]
+            isOneToOne: false
+            referencedRelation: "zone_details"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "resources_zone_id_fkey"
+            columns: ["zone_id"]
+            isOneToOne: false
+            referencedRelation: "zones"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Functions: {
       [_ in never]: never
