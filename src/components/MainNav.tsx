@@ -1,13 +1,15 @@
 
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { LayoutDashboard, Settings, PlayCircle, LogOut } from "lucide-react";
+import { LayoutDashboard, Settings, PlayCircle, LogOut, Moon, Sun } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { useTheme } from "@/hooks/use-theme";
 import { useToast } from "@/hooks/use-toast";
 
 export function MainNav() {
   const location = useLocation();
   const navigate = useNavigate();
+  const { theme, setTheme } = useTheme();
   const { toast } = useToast();
 
   const routes = [
@@ -64,6 +66,18 @@ export function MainNav() {
             </Link>
           ))}
         </nav>
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+          className="hover:bg-primary/10"
+        >
+          {theme === "dark" ? (
+            <Sun className="h-5 w-5 text-primary" />
+          ) : (
+            <Moon className="h-5 w-5 text-primary" />
+          )}
+        </Button>
         <Button
           variant="ghost"
           size="icon"
