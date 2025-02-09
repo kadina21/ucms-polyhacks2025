@@ -44,7 +44,7 @@ const PopulationDetail = () => {
   return (
     <div className="container mx-auto p-6 space-y-8 animate-fade-in">
       <div className="flex items-center space-x-4">
-        <Link to="/">
+        <Link to="/dashboard">
           <Button variant="ghost" size="icon">
             <ArrowLeft className="w-5 h-5" />
           </Button>
