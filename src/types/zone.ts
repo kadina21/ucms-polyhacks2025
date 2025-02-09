@@ -3,15 +3,6 @@ export type ResourceType = "water" | "minerals" | "energy";
 
 export type AlertPriority = "low" | "medium" | "high";
 
-export type Alert = {
-  id: string;
-  title: string;
-  message: string;
-  priority: AlertPriority;
-  zoneId: string;
-  timestamp: string;
-};
-
 export type Resource = {
   type: ResourceType;
   current: number;
@@ -53,5 +44,4 @@ export type Zone = {
   infrastructure: Infrastructure;
   demographics: Demographics;
   environment: Environment;
-  alerts: Alert[];
 };

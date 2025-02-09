@@ -1,11 +1,10 @@
 
-import { useEffect, useState } from "react";
-import { Zone, Alert } from "@/types/zone";
+import { useState, useEffect } from "react";
+import { Zone } from "@/types/zone";
 import { supabase } from "@/integrations/supabase/client";
 
 export const useZoneData = (id: string | undefined) => {
   const [zone, setZone] = useState<Zone | undefined>();
-  const [alerts, setAlerts] = useState<Alert[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   const fetchZoneDetails = async () => {
@@ -67,7 +66,6 @@ export const useZoneData = (id: string | undefined) => {
           powerPlants: zoneData.power_plants,
         },
         resources: resourcesData?.resources as Zone['resources'] || [],
-        alerts: [], // Initialize with empty array, will be updated by fetchAlerts
       };
 
       setZone(completeZone);
@@ -78,45 +76,9 @@ export const useZoneData = (id: string | undefined) => {
     }
   };
 
-  const fetchAlerts = async () => {
-    if (!id) return;
-    
-    try {
-      const { data, error } = await supabase
-        .from("alerts")
-        .select("*")
-        .eq("zone_id", id)
-        .order("timestamp", { ascending: false });
-
-      if (error) {
-        console.error("Error fetching alerts:", error);
-        return;
-      }
-
-      const formattedAlerts: Alert[] = data.map(alert => ({
-        id: alert.id,
-        title: alert.title,
-        message: alert.message,
-        priority: alert.priority,
-        zoneId: alert.zone_id,
-        timestamp: alert.timestamp,
-      }));
-
-      setAlerts(formattedAlerts);
-      
-      // Update the zone's alerts if zone exists
-      setZone(currentZone => 
-        currentZone ? { ...currentZone, alerts: formattedAlerts } : undefined
-      );
-    } catch (error) {
-      console.error("Error fetching alerts:", error);
-    }
-  };
-
   useEffect(() => {
     fetchZoneDetails();
-    fetchAlerts();
   }, [id]);
 
-  return { zone, alerts, isLoading, refetchAlerts: fetchAlerts };
+  return { zone, isLoading };
 };
