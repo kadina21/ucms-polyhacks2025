@@ -19,11 +19,19 @@ import { ResourceBar } from "@/components/ResourceBar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useToast } from "@/hooks/use-toast";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
 
 const Index = () => {
   const [zones, setZones] = useState<Zone[]>(mockZones);
   const [alerts, setAlerts] = useState<Alert[]>(mockAlerts);
+  const [selectedAlert, setSelectedAlert] = useState<Alert | null>(null);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -33,14 +41,19 @@ const Index = () => {
     });
   }, []);
 
+  const highPriorityAlerts = alerts.filter((a) => a.priority === "high");
+
   return (
     <div className="container mx-auto p-6 space-y-8 animate-fade-in">
       <div className="flex justify-between items-center">
         <h1 className="text-3xl font-bold tracking-tight">Underground Cities Dashboard</h1>
-        <div className="flex items-center space-x-4">
+        <div 
+          className="flex items-center space-x-4 cursor-pointer hover:opacity-80 transition-opacity"
+          onClick={() => setSelectedAlert(highPriorityAlerts[0])}
+        >
           <AlertBadge priority="high" />
           <span className="text-sm text-muted-foreground">
-            {alerts.filter((a) => a.priority === "high").length} Critical Alerts
+            {highPriorityAlerts.length} Critical Alerts
           </span>
         </div>
       </div>
@@ -114,7 +127,8 @@ const Index = () => {
                     .map((alert) => (
                       <div
                         key={alert.id}
-                        className="flex items-center space-x-2 py-2"
+                        className="flex items-center space-x-2 py-2 cursor-pointer hover:bg-muted/50 px-2 rounded-md transition-colors"
+                        onClick={() => setSelectedAlert(alert)}
                       >
                         <AlertTriangle
                           className={cn("w-4 h-4", {
@@ -132,8 +146,45 @@ const Index = () => {
           </Card>
         ))}
       </div>
+
+      <Dialog open={!!selectedAlert} onOpenChange={() => setSelectedAlert(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <AlertTriangle className={cn("w-5 h-5", {
+                "text-alert-low": selectedAlert?.priority === "low",
+                "text-alert-medium": selectedAlert?.priority === "medium",
+                "text-alert-high": selectedAlert?.priority === "high",
+              })} />
+              {selectedAlert?.title}
+            </DialogTitle>
+            <DialogDescription>
+              {selectedAlert?.message}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-muted-foreground">Priority</span>
+              <AlertBadge priority={selectedAlert?.priority || "low"} />
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-muted-foreground">Zone</span>
+              <span className="text-sm font-medium">
+                {zones.find(z => z.id === selectedAlert?.zoneId)?.name}
+              </span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-muted-foreground">Timestamp</span>
+              <span className="text-sm font-medium">
+                {selectedAlert?.timestamp ? new Date(selectedAlert.timestamp).toLocaleString() : '-'}
+              </span>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
 
 export default Index;
+
