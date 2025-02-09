@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
-import { ArrowLeft, Activity } from "lucide-react";
+import { ArrowLeft, Activity, Clock, AlertTriangle } from "lucide-react";
 import { Zone } from "@/types/zone";
 import { mockZones } from "@/data/mockData";
 import { Button } from "@/components/ui/button";
@@ -8,6 +8,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { MetricCard } from "@/components/MetricCard";
 import { ResourceBar } from "@/components/ResourceBar";
+import { Badge } from "@/components/ui/badge";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { cn } from "@/lib/utils";
 
 const ZoneDetail = () => {
   const { id } = useParams();
@@ -43,6 +46,7 @@ const ZoneDetail = () => {
           <TabsTrigger value="infrastructure">Infrastructure</TabsTrigger>
           <TabsTrigger value="resources">Resources</TabsTrigger>
           <TabsTrigger value="environment">Environment</TabsTrigger>
+          <TabsTrigger value="maintenance">Maintenance</TabsTrigger>
         </TabsList>
 
         <TabsContent value="overview" className="space-y-6">
@@ -180,6 +184,66 @@ const ZoneDetail = () => {
               description="Climate management"
             />
           </div>
+        </TabsContent>
+
+        <TabsContent value="maintenance" className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center justify-between">
+                <span>Maintenance Requests</span>
+                <Button variant="outline" size="sm">
+                  <Clock className="w-4 h-4 mr-2" />
+                  New Request
+                </Button>
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Title</TableHead>
+                    <TableHead>Status</TableHead>
+                    <TableHead>Priority</TableHead>
+                    <TableHead>Created</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {zone.maintenanceRequests?.map((request) => (
+                    <TableRow key={request.id}>
+                      <TableCell className="font-medium">{request.title}</TableCell>
+                      <TableCell>
+                        <Badge 
+                          variant="outline" 
+                          className={cn({
+                            "bg-yellow-100 text-yellow-800 hover:bg-yellow-100": request.status === "pending",
+                            "bg-blue-100 text-blue-800 hover:bg-blue-100": request.status === "in_progress",
+                            "bg-green-100 text-green-800 hover:bg-green-100": request.status === "completed"
+                          })}
+                        >
+                          {request.status}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
+                        <Badge 
+                          variant="outline"
+                          className={cn({
+                            "bg-gray-100 text-gray-800 hover:bg-gray-100": request.priority === "low",
+                            "bg-yellow-100 text-yellow-800 hover:bg-yellow-100": request.priority === "medium",
+                            "bg-red-100 text-red-800 hover:bg-red-100": request.priority === "high"
+                          })}
+                        >
+                          {request.priority}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="text-muted-foreground">
+                        {new Date(request.createdAt).toLocaleDateString()}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </CardContent>
+          </Card>
         </TabsContent>
       </Tabs>
     </div>
