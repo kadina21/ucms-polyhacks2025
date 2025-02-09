@@ -1,5 +1,5 @@
-
 import { Zone, Alert } from "@/types/zone";
+import { MaintenanceTask } from "@/types/maintenance";
 
 export const mockZones: Zone[] = [
   {
@@ -148,5 +148,53 @@ export const mockAlerts: Alert[] = [
     priority: "low",
     zoneId: "alpha",
     timestamp: new Date().toISOString(),
+  },
+];
+
+export const mockMaintenanceTasks: MaintenanceTask[] = [
+  {
+    id: "1",
+    zoneId: "alpha",
+    title: "UOE System Maintenance",
+    description: "Routine maintenance of Underground Optimal Elevator systems",
+    type: "routine",
+    status: "pending",
+    priority: "medium",
+    scheduledDate: new Date(Date.now() + 86400000).toISOString(), // Tomorrow
+    assignedTo: "Engineering Team A",
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+    estimatedDuration: "4 hours",
+    notes: [],
+  },
+  {
+    id: "2",
+    zoneId: "beta",
+    title: "Train Track Repair",
+    description: "Emergency repair needed on multilevel train track section B-7",
+    type: "repair",
+    status: "in_progress",
+    priority: "high",
+    scheduledDate: new Date().toISOString(),
+    assignedTo: "Maintenance Team C",
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+    estimatedDuration: "8 hours",
+    notes: ["Material delivery scheduled", "Safety protocols reviewed"],
+  },
+  {
+    id: "3",
+    zoneId: "gamma",
+    title: "Flying Vehicle Dock Upgrade",
+    description: "Upgrade charging stations at two-seater flying vehicle docks",
+    type: "upgrade",
+    status: "pending",
+    priority: "low",
+    scheduledDate: new Date(Date.now() + 172800000).toISOString(), // Day after tomorrow
+    assignedTo: "Infrastructure Team B",
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+    estimatedDuration: "12 hours",
+    notes: [],
   },
 ];
