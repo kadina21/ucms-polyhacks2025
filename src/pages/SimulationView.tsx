@@ -14,6 +14,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { mockZones } from "@/data/mockData";
+import { cn } from "@/lib/utils";
 
 interface SimulationResults {
   oxygen: number;
@@ -30,13 +31,28 @@ const SimulationView = () => {
   const [water, setWater] = useState(50);
   const [electricity, setElectricity] = useState(50);
   const [results, setResults] = useState<SimulationResults | null>(null);
+  const [showProgress, setShowProgress] = useState(false);
 
   const selectedZoneData = mockZones.find((zone) => zone.id === selectedZone);
+
+  // Reset progress animation when starting new simulation
+  useEffect(() => {
+    if (isSimulating) {
+      setShowProgress(false);
+    }
+  }, [isSimulating]);
+
+  const getProgressColor = (value: number) => {
+    if (value < 30) return "bg-red-500";
+    if (value < 60) return "bg-yellow-500";
+    return "bg-green-500";
+  };
 
   const runSimulation = () => {
     if (!selectedZoneData) return;
 
     setIsSimulating(true);
+    setShowProgress(false);
     toast({
       title: "Simulation Started",
       description: "Resource allocation simulation is now running...",
@@ -57,6 +73,9 @@ const SimulationView = () => {
       
       setResults(mockResults);
       setIsSimulating(false);
+      // Trigger progress animation after results are set
+      setTimeout(() => setShowProgress(true), 100);
+      
       toast({
         title: "Simulation Complete",
         description: `Resource allocation has been optimized for ${selectedZoneData.name} with population of ${selectedZoneData.demographics.totalPopulation}.`,
@@ -165,7 +184,17 @@ const SimulationView = () => {
                     <span>Oxygen Efficiency</span>
                     <span>{Math.round(results.oxygen)}%</span>
                   </div>
-                  <Progress value={results.oxygen} className="h-2" />
+                  <div className="h-2 w-full bg-secondary rounded-full overflow-hidden">
+                    <div
+                      className={cn(
+                        "h-full transition-all duration-1000 ease-in-out rounded-full",
+                        getProgressColor(results.oxygen)
+                      )}
+                      style={{
+                        width: showProgress ? `${Math.round(results.oxygen)}%` : "0%",
+                      }}
+                    />
+                  </div>
                 </div>
 
                 <div className="space-y-2">
@@ -173,7 +202,17 @@ const SimulationView = () => {
                     <span>Water Efficiency</span>
                     <span>{Math.round(results.water)}%</span>
                   </div>
-                  <Progress value={results.water} className="h-2" />
+                  <div className="h-2 w-full bg-secondary rounded-full overflow-hidden">
+                    <div
+                      className={cn(
+                        "h-full transition-all duration-1000 ease-in-out rounded-full",
+                        getProgressColor(results.water)
+                      )}
+                      style={{
+                        width: showProgress ? `${Math.round(results.water)}%` : "0%",
+                      }}
+                    />
+                  </div>
                 </div>
 
                 <div className="space-y-2">
@@ -181,7 +220,17 @@ const SimulationView = () => {
                     <span>Electricity Efficiency</span>
                     <span>{Math.round(results.electricity)}%</span>
                   </div>
-                  <Progress value={results.electricity} className="h-2" />
+                  <div className="h-2 w-full bg-secondary rounded-full overflow-hidden">
+                    <div
+                      className={cn(
+                        "h-full transition-all duration-1000 ease-in-out rounded-full",
+                        getProgressColor(results.electricity)
+                      )}
+                      style={{
+                        width: showProgress ? `${Math.round(results.electricity)}%` : "0%",
+                      }}
+                    />
+                  </div>
                 </div>
 
                 <div className="pt-4 border-t">
@@ -190,6 +239,17 @@ const SimulationView = () => {
                     <span className="text-2xl font-bold">
                       {Math.round(results.efficiency)}%
                     </span>
+                  </div>
+                  <div className="mt-2 h-3 w-full bg-secondary rounded-full overflow-hidden">
+                    <div
+                      className={cn(
+                        "h-full transition-all duration-1000 ease-in-out rounded-full",
+                        getProgressColor(results.efficiency)
+                      )}
+                      style={{
+                        width: showProgress ? `${Math.round(results.efficiency)}%` : "0%",
+                      }}
+                    />
                   </div>
                 </div>
               </div>
