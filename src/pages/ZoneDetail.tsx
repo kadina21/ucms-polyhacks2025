@@ -1,8 +1,9 @@
+
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { ArrowLeft, Activity } from "lucide-react";
-import { Zone } from "@/types/zone";
-import { mockZones, mockAlerts } from "@/data/mockData";
+import { Zone, Alert } from "@/types/zone";
+import { mockZones } from "@/data/mockData";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -10,20 +11,42 @@ import { MetricCard } from "@/components/MetricCard";
 import { ResourceBar } from "@/components/ResourceBar";
 import { AlertDialog } from "@/components/AlertDialog";
 import { AlertsList } from "@/components/AlertsList";
+import { supabase } from "@/integrations/supabase/client";
 
 const ZoneDetail = () => {
   const { id } = useParams();
   const [zone, setZone] = useState<Zone | undefined>();
-  const [alerts, setAlerts] = useState(mockAlerts.filter(a => a.zoneId === id));
+  const [alerts, setAlerts] = useState<Alert[]>([]);
 
   useEffect(() => {
     const foundZone = mockZones.find((z) => z.id === id);
     setZone(foundZone);
   }, [id]);
 
-  const handleAlertCreated = () => {
-    setAlerts(mockAlerts.filter(a => a.zoneId === id));
+  const fetchAlerts = async () => {
+    if (!id) return;
+    
+    try {
+      const { data, error } = await supabase
+        .from("alerts")
+        .select("*")
+        .eq("zone_id", id)
+        .order("timestamp", { ascending: false });
+
+      if (error) {
+        console.error("Error fetching alerts:", error);
+        return;
+      }
+
+      setAlerts(data as Alert[]);
+    } catch (error) {
+      console.error("Error fetching alerts:", error);
+    }
   };
+
+  useEffect(() => {
+    fetchAlerts();
+  }, [id]);
 
   if (!zone) {
     return <div>Zone not found</div>;
@@ -43,7 +66,7 @@ const ZoneDetail = () => {
             <Activity className="w-6 h-6 text-muted-foreground" />
           </h1>
         </div>
-        <AlertDialog zoneId={zone.id} onAlertCreated={handleAlertCreated} />
+        <AlertDialog zoneId={zone.id} onAlertCreated={fetchAlerts} />
       </div>
 
       <Tabs defaultValue="overview" className="space-y-6">

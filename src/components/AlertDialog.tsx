@@ -23,6 +23,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { AlertPriority } from "@/types/zone";
 import { BellPlus } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 
 interface AlertDialogProps {
   zoneId: string;
@@ -36,34 +37,40 @@ export function AlertDialog({ zoneId, onAlertCreated }: AlertDialogProps) {
   const [priority, setPriority] = useState<AlertPriority>("low");
   const { toast } = useToast();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    // For now using mock data, will be replaced with Supabase integration
-    const newAlert = {
-      id: Math.random().toString(),
-      title,
-      message,
-      priority,
-      zoneId,
-      timestamp: new Date().toISOString(),
-    };
+    try {
+      const { error } = await supabase.from("alerts").insert({
+        title,
+        message,
+        priority,
+        zone_id: zoneId,
+        timestamp: new Date().toISOString(),
+      });
 
-    // Add to mock data
-    mockAlerts.push(newAlert);
-    
-    toast({
-      title: "Alert Created",
-      description: "The alert has been created successfully.",
-    });
-    
-    setOpen(false);
-    onAlertCreated();
-    
-    // Reset form
-    setTitle("");
-    setMessage("");
-    setPriority("low");
+      if (error) throw error;
+      
+      toast({
+        title: "Alert Created",
+        description: "The alert has been created successfully.",
+      });
+      
+      setOpen(false);
+      onAlertCreated();
+      
+      // Reset form
+      setTitle("");
+      setMessage("");
+      setPriority("low");
+    } catch (error) {
+      console.error("Error creating alert:", error);
+      toast({
+        title: "Error",
+        description: "Failed to create alert. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
 
   return (
