@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import {
@@ -132,7 +131,7 @@ const Index = () => {
                       >
                         <AlertTriangle
                           className={cn("w-4 h-4", {
-                            "text-alert-low": alert.priority === "low",
+                            "text-alert-medium": alert.priority === "low",
                             "text-alert-medium": alert.priority === "medium",
                             "text-alert-high": alert.priority === "high",
                           })}
@@ -187,4 +186,3 @@ const Index = () => {
 };
 
 export default Index;
-
