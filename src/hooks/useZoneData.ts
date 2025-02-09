@@ -67,6 +67,7 @@ export const useZoneData = (id: string | undefined) => {
           powerPlants: zoneData.power_plants,
         },
         resources: resourcesData?.resources as Zone['resources'] || [],
+        alerts: [], // Initialize with empty array, will be updated by fetchAlerts
       };
 
       setZone(completeZone);
@@ -102,6 +103,11 @@ export const useZoneData = (id: string | undefined) => {
       }));
 
       setAlerts(formattedAlerts);
+      
+      // Update the zone's alerts if zone exists
+      setZone(currentZone => 
+        currentZone ? { ...currentZone, alerts: formattedAlerts } : undefined
+      );
     } catch (error) {
       console.error("Error fetching alerts:", error);
     }
