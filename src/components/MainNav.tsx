@@ -68,9 +68,9 @@ export function MainNav() {
           variant="ghost"
           size="icon"
           onClick={handleSignOut}
-          className="hover:bg-destructive/10"
+          className="hover:bg-primary/10"
         >
-          <LogOut className="h-5 w-5 text-destructive" />
+          <LogOut className="h-5 w-5 text-primary" />
         </Button>
       </div>
     </div>
