@@ -1,23 +1,29 @@
-
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { ArrowLeft, Activity } from "lucide-react";
 import { Zone } from "@/types/zone";
-import { mockZones } from "@/data/mockData";
+import { mockZones, mockAlerts } from "@/data/mockData";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { MetricCard } from "@/components/MetricCard";
 import { ResourceBar } from "@/components/ResourceBar";
+import { AlertDialog } from "@/components/AlertDialog";
+import { AlertsList } from "@/components/AlertsList";
 
 const ZoneDetail = () => {
   const { id } = useParams();
   const [zone, setZone] = useState<Zone | undefined>();
+  const [alerts, setAlerts] = useState(mockAlerts.filter(a => a.zoneId === id));
 
   useEffect(() => {
     const foundZone = mockZones.find((z) => z.id === id);
     setZone(foundZone);
   }, [id]);
+
+  const handleAlertCreated = () => {
+    setAlerts(mockAlerts.filter(a => a.zoneId === id));
+  };
 
   if (!zone) {
     return <div>Zone not found</div>;
@@ -25,21 +31,25 @@ const ZoneDetail = () => {
 
   return (
     <div className="container mx-auto p-6 space-y-8 animate-fade-in">
-      <div className="flex items-center space-x-4">
-        <Link to="/">
-          <Button variant="ghost" size="icon">
-            <ArrowLeft className="w-5 h-5" />
-          </Button>
-        </Link>
-        <h1 className="text-3xl font-bold tracking-tight flex items-center space-x-2">
-          <span>{zone.name}</span>
-          <Activity className="w-6 h-6 text-muted-foreground" />
-        </h1>
+      <div className="flex items-center justify-between">
+        <div className="flex items-center space-x-4">
+          <Link to="/">
+            <Button variant="ghost" size="icon">
+              <ArrowLeft className="w-5 h-5" />
+            </Button>
+          </Link>
+          <h1 className="text-3xl font-bold tracking-tight flex items-center space-x-2">
+            <span>{zone.name}</span>
+            <Activity className="w-6 h-6 text-muted-foreground" />
+          </h1>
+        </div>
+        <AlertDialog zoneId={zone.id} onAlertCreated={handleAlertCreated} />
       </div>
 
       <Tabs defaultValue="overview" className="space-y-6">
         <TabsList>
           <TabsTrigger value="overview">Overview</TabsTrigger>
+          <TabsTrigger value="alerts">Alerts</TabsTrigger>
           <TabsTrigger value="demographics">Demographics</TabsTrigger>
           <TabsTrigger value="infrastructure">Infrastructure</TabsTrigger>
           <TabsTrigger value="resources">Resources</TabsTrigger>
@@ -69,6 +79,10 @@ const ZoneDetail = () => {
               description="Of maximum capacity"
             />
           </div>
+        </TabsContent>
+
+        <TabsContent value="alerts" className="space-y-6">
+          <AlertsList alerts={alerts} />
         </TabsContent>
 
         <TabsContent value="demographics" className="space-y-6">
