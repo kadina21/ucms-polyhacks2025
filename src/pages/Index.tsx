@@ -8,9 +8,10 @@ import {
   Users,
   Droplet,
   Gauge,
+  Wrench,
 } from "lucide-react";
-import { Alert, Zone } from "@/types/zone";
-import { mockZones, mockAlerts } from "@/data/mockData";
+import { supabase } from "@/integrations/supabase/client";
+import { Zone, Alert, MaintenanceRequest } from "@/types/zone";
 import { MetricCard } from "@/components/MetricCard";
 import { AlertBadge } from "@/components/AlertBadge";
 import { ResourceBar } from "@/components/ResourceBar";
@@ -20,27 +21,80 @@ import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 
 const Index = () => {
-  const [zones, setZones] = useState<Zone[]>(mockZones);
-  const [alerts, setAlerts] = useState<Alert[]>(mockAlerts);
+  const [zones, setZones] = useState<Zone[]>([]);
   const { toast } = useToast();
 
   useEffect(() => {
-    toast({
-      title: "Dashboard Initialized",
-      description: "Live monitoring of underground zones activated.",
-    });
+    const fetchData = async () => {
+      try {
+        // Fetch zones
+        const { data: zonesData, error: zonesError } = await supabase
+          .from('zones')
+          .select('*');
+        
+        if (zonesError) throw zonesError;
+
+        // Fetch maintenance requests
+        const { data: maintenanceData, error: maintenanceError } = await supabase
+          .from('maintenance_requests')
+          .select('*');
+
+        if (maintenanceError) throw maintenanceError;
+
+        // Format the data to match our TypeScript types
+        const formattedZones = zonesData.map(zone => {
+          const zoneRequests = maintenanceData
+            .filter(req => req.zone_id === zone.id)
+            .map(req => ({
+              id: req.id,
+              title: req.title,
+              description: req.description,
+              category: req.category,
+              status: req.status,
+              zoneId: req.zone_id,
+              createdAt: req.created_at,
+              updatedAt: req.updated_at,
+              resolvedAt: req.resolved_at,
+            }));
+
+          return {
+            id: zone.id,
+            name: zone.name,
+            maturityScore: zone.maturity_score,
+            resources: [], // You may want to fetch these from your resources table
+            infrastructure: {} as any, // You may want to fetch these from your infrastructure table
+            demographics: {} as any, // You may want to fetch these from your demographics table
+            environment: {} as any, // You may want to fetch these from your environment table
+            alerts: [],
+            maintenanceRequests: zoneRequests,
+          };
+        });
+
+        setZones(formattedZones);
+        toast({
+          title: "Dashboard Initialized",
+          description: "Live monitoring of underground zones activated.",
+        });
+      } catch (error: any) {
+        toast({
+          title: "Error",
+          description: "Failed to fetch zone data: " + error.message,
+          variant: "destructive",
+        });
+      }
+    };
+
+    fetchData();
   }, []);
+
+  const getOpenRequestsCount = (zoneId: string) => {
+    return zones.find(z => z.id === zoneId)?.maintenanceRequests.filter(r => r.status === 'open').length || 0;
+  };
 
   return (
     <div className="container mx-auto p-6 space-y-8 animate-fade-in">
       <div className="flex justify-between items-center">
         <h1 className="text-3xl font-bold tracking-tight">Underground Cities Dashboard</h1>
-        <div className="flex items-center space-x-4">
-          <AlertBadge priority="high" />
-          <span className="text-sm text-muted-foreground">
-            {alerts.filter((a) => a.priority === "high").length} Critical Alerts
-          </span>
-        </div>
       </div>
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
@@ -69,46 +123,36 @@ const Index = () => {
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="grid gap-4 grid-cols-2">
-                <Link to={`/zone/${zone.id}/population`}>
-                  <MetricCard
-                    title="Population"
-                    value={zone.demographics.totalPopulation.toLocaleString()}
-                    icon={Users}
-                    className="cursor-pointer hover:border-primary transition-colors"
-                  />
-                </Link>
                 <MetricCard
                   title="Maturity Score"
                   value={`${zone.maturityScore}%`}
                   icon={Gauge}
                 />
+                <MetricCard
+                  title="Maintenance Requests"
+                  value={getOpenRequestsCount(zone.id)}
+                  description="Open requests"
+                  icon={Wrench}
+                  className={cn({
+                    "border-red-200 bg-red-50": getOpenRequestsCount(zone.id) > 2,
+                    "border-yellow-200 bg-yellow-50": getOpenRequestsCount(zone.id) === 2,
+                  })}
+                />
               </div>
 
-              <div className="space-y-4">
-                <h4 className="text-sm font-semibold">Resources</h4>
-                {zone.resources.map((resource) => (
-                  <ResourceBar key={resource.type} resource={resource} />
-                ))}
-              </div>
-
+              {/* Display recent maintenance requests */}
               <div className="space-y-2">
-                <h4 className="text-sm font-semibold">Recent Alerts</h4>
+                <h4 className="text-sm font-semibold">Recent Maintenance Requests</h4>
                 <ScrollArea className="h-[100px]">
-                  {alerts
-                    .filter((alert) => alert.zoneId === zone.id)
-                    .map((alert) => (
+                  {zone.maintenanceRequests
+                    .filter(request => request.status === 'open')
+                    .map((request) => (
                       <div
-                        key={alert.id}
+                        key={request.id}
                         className="flex items-center space-x-2 py-2"
                       >
-                        <AlertTriangle
-                          className={cn("w-4 h-4", {
-                            "text-alert-low": alert.priority === "low",
-                            "text-alert-medium": alert.priority === "medium",
-                            "text-alert-high": alert.priority === "high",
-                          })}
-                        />
-                        <span className="text-sm">{alert.title}</span>
+                        <Wrench className="w-4 h-4 text-muted-foreground" />
+                        <span className="text-sm">{request.title}</span>
                       </div>
                     ))}
                 </ScrollArea>
