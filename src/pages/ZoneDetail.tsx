@@ -38,7 +38,17 @@ const ZoneDetail = () => {
         return;
       }
 
-      setAlerts(data as Alert[]);
+      // Map the Supabase response to match our Alert type
+      const formattedAlerts: Alert[] = data.map(alert => ({
+        id: alert.id,
+        title: alert.title,
+        message: alert.message,
+        priority: alert.priority,
+        zoneId: alert.zone_id,
+        timestamp: alert.timestamp,
+      }));
+
+      setAlerts(formattedAlerts);
     } catch (error) {
       console.error("Error fetching alerts:", error);
     }
