@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { ArrowLeft, Activity, Wrench } from "lucide-react";
@@ -63,9 +64,35 @@ const ZoneDetail = () => {
           name: zoneData.name,
           maturityScore: zoneData.maturity_score,
           resources: [],
-          infrastructure: {} as any,
-          demographics: {} as any,
-          environment: {} as any,
+          infrastructure: {
+            hospitals: 0,
+            schools: 0,
+            residentialUnits: 0,
+            transportationHubs: 0,
+            powerPlants: 0,
+            transportation: {
+              uoeCount: 0,
+              multilevelTrains: 0,
+              flyingVehicles: 0,
+              accessibilityRate: 0,
+            }
+          },
+          demographics: {
+            totalPopulation: 0,
+            growthRate: 0,
+            density: 0,
+            ageDistribution: {
+              under18: 0,
+              adults: 0,
+              seniors: 0,
+            }
+          },
+          environment: {
+            airQuality: 0,
+            waterQuality: 0,
+            seismicStability: 0,
+            temperatureControl: 0,
+          },
           alerts: [],
           maintenanceRequests,
         });
@@ -82,7 +109,7 @@ const ZoneDetail = () => {
   }, [id]);
 
   if (!zone) {
-    return <div>Zone not found</div>;
+    return <div>Loading...</div>;
   }
 
   const getStatusColor = (status: string) => {
@@ -208,3 +235,4 @@ const ZoneDetail = () => {
 };
 
 export default ZoneDetail;
+
