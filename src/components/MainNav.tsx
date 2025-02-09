@@ -40,10 +40,10 @@ export function MainNav() {
   };
 
   return (
-    <div className="flex justify-between items-center w-full px-6">
+    <div className="flex justify-between items-center w-full px-6 py-4 glass-morphism">
       <div className="flex items-center">
         <Link to="/" className="flex items-center space-x-2">
-          <span className="text-2xl font-bold text-primary">UCMS</span>
+          <span className="text-2xl font-bold bg-gradient-to-r from-blue-500 via-primary to-purple-500 bg-clip-text text-transparent animate-pulse">UCMS</span>
         </Link>
       </div>
       <div className="flex items-center space-x-6">
@@ -53,9 +53,9 @@ export function MainNav() {
               key={route.href}
               to={route.href}
               className={cn(
-                "text-sm font-medium transition-colors hover:text-primary flex items-center space-x-2",
+                "text-sm font-medium transition-all duration-200 hover:text-primary flex items-center space-x-2 px-3 py-2 rounded-md hover:bg-white/5",
                 route.active 
-                  ? "text-primary" 
+                  ? "text-primary bg-white/10" 
                   : "text-muted-foreground"
               )}
             >
