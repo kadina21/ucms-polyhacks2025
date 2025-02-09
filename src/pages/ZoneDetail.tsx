@@ -1,7 +1,7 @@
 
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
-import { ArrowLeft, Activity, Wrench } from "lucide-react";
+import { ArrowLeft, Activity, Wrench, Users, Building2, Database, Wind } from "lucide-react";
 import { Zone, MaintenanceRequest } from "@/types/zone";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -65,33 +65,33 @@ const ZoneDetail = () => {
           maturityScore: zoneData.maturity_score,
           resources: [],
           infrastructure: {
-            hospitals: 0,
-            schools: 0,
-            residentialUnits: 0,
-            transportationHubs: 0,
-            powerPlants: 0,
+            hospitals: 5,
+            schools: 12,
+            residentialUnits: 5000,
+            transportationHubs: 3,
+            powerPlants: 2,
             transportation: {
-              uoeCount: 0,
-              multilevelTrains: 0,
-              flyingVehicles: 0,
-              accessibilityRate: 0,
+              uoeCount: 150,
+              multilevelTrains: 10,
+              flyingVehicles: 50,
+              accessibilityRate: 85,
             }
           },
           demographics: {
-            totalPopulation: 0,
-            growthRate: 0,
-            density: 0,
+            totalPopulation: 250000,
+            growthRate: 2.5,
+            density: 4500,
             ageDistribution: {
-              under18: 0,
-              adults: 0,
-              seniors: 0,
+              under18: 25,
+              adults: 60,
+              seniors: 15,
             }
           },
           environment: {
-            airQuality: 0,
-            waterQuality: 0,
-            seismicStability: 0,
-            temperatureControl: 0,
+            airQuality: 85,
+            waterQuality: 90,
+            seismicStability: 95,
+            temperatureControl: 88,
           },
           alerts: [],
           maintenanceRequests,
@@ -147,28 +147,84 @@ const ZoneDetail = () => {
           <TabsTrigger value="maintenance">Maintenance</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="overview">
+        <TabsContent value="overview" className="space-y-6">
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
             <MetricCard
               title="Maturity Score"
               value={`${zone.maturityScore}%`}
               description="Overall zone performance"
+              icon={Activity}
             />
             <MetricCard
               title="Population"
               value={zone.demographics.totalPopulation.toLocaleString()}
               description={`${zone.demographics.growthRate}% annual growth`}
+              icon={Users}
             />
             <MetricCard
-              title="Housing Capacity"
-              value={zone.infrastructure.residentialUnits.toLocaleString()}
-              description="Total residential units"
+              title="Infrastructure"
+              value={`${zone.infrastructure.residentialUnits.toLocaleString()}`}
+              description={`${zone.infrastructure.hospitals} hospitals, ${zone.infrastructure.schools} schools`}
+              icon={Building2}
             />
             <MetricCard
-              title="Energy Efficiency"
-              value={`${Math.round((zone.resources.find(r => r.type === "energy")?.current || 0) / (zone.resources.find(r => r.type === "energy")?.capacity || 1) * 100)}%`}
-              description="Of maximum capacity"
+              title="Environment"
+              value={`${zone.environment.airQuality}%`}
+              description="Air quality index"
+              icon={Wind}
             />
+          </div>
+
+          <div className="grid gap-6 md:grid-cols-2">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Users className="w-5 h-5" />
+                  Demographics
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <p className="text-sm text-muted-foreground">Age Distribution</p>
+                    <p className="text-2xl font-bold">
+                      {zone.demographics.ageDistribution.adults}% Adults
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-muted-foreground">Population Density</p>
+                    <p className="text-2xl font-bold">
+                      {zone.demographics.density}/km²
+                    </p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Database className="w-5 h-5" />
+                  Infrastructure
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <p className="text-sm text-muted-foreground">Transport Hubs</p>
+                    <p className="text-2xl font-bold">
+                      {zone.infrastructure.transportationHubs}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-muted-foreground">Power Plants</p>
+                    <p className="text-2xl font-bold">
+                      {zone.infrastructure.powerPlants}
+                    </p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
           </div>
         </TabsContent>
 
