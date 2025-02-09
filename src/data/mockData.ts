@@ -1,5 +1,38 @@
 
-import { Zone, Alert } from "@/types/zone";
+import { Zone, Alert, MaintenanceRequest } from "@/types/zone";
+
+export const mockMaintenanceRequests: MaintenanceRequest[] = [
+  {
+    id: "1",
+    title: "Fix Water Filtration System",
+    description: "Regular maintenance needed for water filtration system in sector A",
+    status: "pending",
+    priority: "high",
+    zoneId: "alpha",
+    createdAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
+    updatedAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
+  },
+  {
+    id: "2",
+    title: "Transport Hub Inspection",
+    description: "Scheduled inspection of main transport hub",
+    status: "in_progress",
+    priority: "medium",
+    zoneId: "beta",
+    createdAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
+    updatedAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
+  },
+  {
+    id: "3",
+    title: "Power Grid Maintenance",
+    description: "Regular maintenance of power distribution grid",
+    status: "completed",
+    priority: "low",
+    zoneId: "gamma",
+    createdAt: new Date(Date.now() - 14 * 24 * 60 * 60 * 1000).toISOString(),
+    updatedAt: new Date(Date.now() - 13 * 24 * 60 * 60 * 1000).toISOString(),
+  }
+];
 
 export const mockZones: Zone[] = [
   {
@@ -41,6 +74,7 @@ export const mockZones: Zone[] = [
       temperatureControl: 90,
     },
     alerts: [],
+    maintenanceRequests: mockMaintenanceRequests.filter(req => req.zoneId === "alpha"),
   },
   {
     id: "beta",
@@ -81,6 +115,7 @@ export const mockZones: Zone[] = [
       temperatureControl: 87,
     },
     alerts: [],
+    maintenanceRequests: mockMaintenanceRequests.filter(req => req.zoneId === "beta"),
   },
   {
     id: "gamma",
@@ -121,6 +156,7 @@ export const mockZones: Zone[] = [
       temperatureControl: 80,
     },
     alerts: [],
+    maintenanceRequests: mockMaintenanceRequests.filter(req => req.zoneId === "gamma"),
   },
 ];
 

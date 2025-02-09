@@ -3,6 +3,20 @@ export type ResourceType = "water" | "minerals" | "energy";
 
 export type AlertPriority = "low" | "medium" | "high";
 
+export type MaintenanceRequestStatus = "pending" | "in_progress" | "completed";
+export type MaintenanceRequestPriority = "low" | "medium" | "high";
+
+export type MaintenanceRequest = {
+  id: string;
+  title: string;
+  description: string | null;
+  status: MaintenanceRequestStatus;
+  priority: MaintenanceRequestPriority;
+  zoneId: string;
+  createdAt: string;
+  updatedAt: string;
+};
+
 export type Alert = {
   id: string;
   title: string;
@@ -62,4 +76,6 @@ export type Zone = {
   demographics: Demographics;
   environment: Environment;
   alerts: Alert[];
+  maintenanceRequests?: MaintenanceRequest[];
 };
+
