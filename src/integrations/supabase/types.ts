@@ -210,6 +210,75 @@ export type Database = {
           },
         ]
       }
+      maintenance_tasks: {
+        Row: {
+          actual_duration: unknown | null
+          assigned_to: string | null
+          completion_date: string | null
+          created_at: string | null
+          description: string | null
+          estimated_duration: unknown | null
+          id: string
+          notes: string[] | null
+          priority: Database["public"]["Enums"]["maintenance_priority"] | null
+          scheduled_date: string | null
+          status: Database["public"]["Enums"]["maintenance_status"] | null
+          title: string
+          type: Database["public"]["Enums"]["maintenance_type"]
+          updated_at: string | null
+          zone_id: string
+        }
+        Insert: {
+          actual_duration?: unknown | null
+          assigned_to?: string | null
+          completion_date?: string | null
+          created_at?: string | null
+          description?: string | null
+          estimated_duration?: unknown | null
+          id?: string
+          notes?: string[] | null
+          priority?: Database["public"]["Enums"]["maintenance_priority"] | null
+          scheduled_date?: string | null
+          status?: Database["public"]["Enums"]["maintenance_status"] | null
+          title: string
+          type: Database["public"]["Enums"]["maintenance_type"]
+          updated_at?: string | null
+          zone_id: string
+        }
+        Update: {
+          actual_duration?: unknown | null
+          assigned_to?: string | null
+          completion_date?: string | null
+          created_at?: string | null
+          description?: string | null
+          estimated_duration?: unknown | null
+          id?: string
+          notes?: string[] | null
+          priority?: Database["public"]["Enums"]["maintenance_priority"] | null
+          scheduled_date?: string | null
+          status?: Database["public"]["Enums"]["maintenance_status"] | null
+          title?: string
+          type?: Database["public"]["Enums"]["maintenance_type"]
+          updated_at?: string | null
+          zone_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "maintenance_tasks_zone_id_fkey"
+            columns: ["zone_id"]
+            isOneToOne: false
+            referencedRelation: "zone_details"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "maintenance_tasks_zone_id_fkey"
+            columns: ["zone_id"]
+            isOneToOne: false
+            referencedRelation: "zones"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       population_history: {
         Row: {
           created_at: string | null
@@ -377,6 +446,9 @@ export type Database = {
     }
     Enums: {
       alert_priority: "low" | "medium" | "high"
+      maintenance_priority: "low" | "medium" | "high"
+      maintenance_status: "pending" | "in_progress" | "completed" | "cancelled"
+      maintenance_type: "routine" | "repair" | "upgrade"
       resource_type: "water" | "minerals" | "energy"
     }
     CompositeTypes: {
